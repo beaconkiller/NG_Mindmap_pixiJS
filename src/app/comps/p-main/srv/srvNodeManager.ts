@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Sprite, Texture, Text, BitmapText, Container, FederatedMouseEvent, Graphics, graphicsContextToSvg, Application } from "pixi.js";
+import { Sprite, Texture, Text, BitmapText, Container, FederatedMouseEvent, Graphics, graphicsContextToSvg, Application, BlurFilter } from "pixi.js";
 import { ModelNode, ModelPointState } from "../model/ModelPoint";
 import { DropShadowFilter } from 'pixi-filters';
 import { SrvMain } from "./srvMain";
@@ -41,7 +41,7 @@ export class SrvNodeManager {
         });
         titleText.anchor.set(0.5);
 
-        const rect = this.drawBorderedRect(titleText, nodeData.tint);
+        const rect = this.drawBorderedRect(titleText, nodeData.tint, nodeData);
 
         nodeGroup.eventMode = 'static';
         nodeGroup.cursor = 'pointer';
@@ -89,16 +89,25 @@ export class SrvNodeManager {
 
 
 
-    drawBorderedRect(titleText: BitmapText, fill: string): Graphics {
+    drawBorderedRect(titleText: BitmapText, fill: string, nodeData: ModelNode): Graphics {
         const rect = new Graphics();
         const rectW = titleText.width + this.defaultPadding;
         const rectH = titleText.height + this.defaultPadding;
         rect.roundRect(-rectW / 2, -rectH / 2, rectW, rectH, 8);
-        rect.fill('#fdfdfd');
-        // rect.stroke({
-        //     color: '#ddd',
-        //     width: 1,
-        // });
+
+        let status = nodeData.status;
+        rect.fill(status == "DONE" ? '#f8f8f8' : '#FFDBDB');
+        rect.stroke({
+            color: status == 'DONE' ? '#fafafa' : '#FFEDED',
+            width: 2,
+            join: "round",
+        });
+
+        // rect.filters = [
+        //     new BlurFilter({
+        //         strength: 0.5,
+        //     })
+        // ]
 
         rect.eventMode = 'static';
         rect.cursor = 'pointer';
@@ -107,16 +116,18 @@ export class SrvNodeManager {
 
 
 
-    redrawBorderedRect(rect: Graphics, title: BitmapText): Graphics {
+    redrawBorderedRect(rect: Graphics, title: BitmapText, nodeData: ModelNode): Graphics {
         const rectW = title.width + this.defaultPadding;
         const rectH = title.height + this.defaultPadding;
         rect.roundRect(-rectW / 2, -rectH / 2, rectW, rectH, 8);
-        rect.fill('#fdfdfd');
-        // rect.stroke({
-        //     color: '#aaa',
-        //     width: 4,
-        //     // pixelLine: true,
-        // });
+
+        let status = nodeData.status;
+        rect.fill(status == "DONE" ? '#f8f8f8' : '#FFDBDB');
+        rect.stroke({
+            color: status == 'DONE' ? '#fafafa' : '#FFEDED',
+            width: 2,
+            join: "round",
+        });
 
         rect.eventMode = 'static';
         rect.cursor = 'pointer';
@@ -227,7 +238,7 @@ export class SrvNodeManager {
 
         let conData = (event.currentTarget as Container);
         let graphicData = conData.children[0] as Graphics;
-        graphicData = this.redrawBorderedRect(graphicData, this.getTitleBmp(conData));
+        graphicData = this.redrawBorderedRect(graphicData, this.getTitleBmp(conData), conNodeData);
 
         nodeStateData.isMouseDown = false;
         nodeStateData.isDrag = false;

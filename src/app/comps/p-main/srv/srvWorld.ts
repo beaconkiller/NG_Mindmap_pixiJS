@@ -69,6 +69,7 @@ export class SrvWorld {
         this.world.addChildAt(this.worldBg, 0);
 
         this.srvMain.app.stage.addChild(this.world);
+        this.srvOverlay.initOverlay();
         this.loadData();
     };
 
@@ -120,6 +121,9 @@ export class SrvWorld {
         this.world.x += dx;
         this.world.y += dy;
 
+        this.srvOverlay.conOverlay.x -= dx;
+        this.srvOverlay.conOverlay.y -= dy;
+
         this.lastMousePos.x = event.global.x;
         this.lastMousePos.y = event.global.y;
     };
@@ -168,11 +172,14 @@ export class SrvWorld {
         let mouseX: number = event.global.x;
         let mouseY: number = event.global.y;
 
+
+        let fixedOffset = deltaY / 1000
+        let zoomValue = this.zoomScale - fixedOffset;
         if (deltaY > 0) {
             if (this.world.scale._x < 0.1) return;
-            this.zoomScale -= deltaY / 2000
+            this.zoomScale = Math.round(zoomValue * 100) / 100;
         } else {
-            this.zoomScale -= deltaY / 2000;
+            this.zoomScale = Math.round(zoomValue * 100) / 100;
         }
 
         let worldPos = this.world.toLocal(event.global);
@@ -180,6 +187,12 @@ export class SrvWorld {
         this.world.scale.set(this.zoomScale);
         this.world.x = mouseX - worldPos.x * this.world.scale.x;
         this.world.y = mouseY - worldPos.y * this.world.scale.y;
+
+        // console.log(this.srvOverlay.gOverlay.scale);
+        // let counterZoom = Math.round((1 - this.zoomScale) * 100) / 100;
+        // console.log(this.zoomScale);
+        // console.log(counterZoom);
+        // this.srvOverlay.gOverlay.scale.set(Math.round(-zoomValue * 100) / 100);
     };
 
 
