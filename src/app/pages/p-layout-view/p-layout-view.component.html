@@ -1,0 +1,40 @@
+<div class="bg-slate-200 w-[100vw] h-screen flex flex-row">
+
+
+
+  <div class="grow flex flex-col overflow-auto">
+    <router-outlet></router-outlet>
+    <!-- Header -->
+    <div class="bg-white shadow p-2 flex items-center">
+      <!-- Tombol untuk MOBILE -->
+      <button class="md:hidden bg-white text-black px-3 py-1 rounded hover:bg-custom-primary-hover transition"
+        (click)="toggleDrawer()">
+        ☰
+      </button>
+
+      <!-- Tombol untuk DESKTOP -->
+      <button class="hidden md:block bg-white text-black px-3 py-1 rounded hover:bg-custom-primary-hover transition"
+        (click)="toggleSidebar()">
+        {{ isCollapsed ? '☰' : '×' }}
+      </button>
+
+      <h1 class="ml-3 font-semibold">{{ activeMenuName }}</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4 grow overflow-auto">
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER MOBILE -->
+<div *ngIf="drawerOpen" class="fixed inset-0 z-50 flex flex-row-reverse">
+
+  <!-- Overlay -->
+  <div class="bg-black/50 flex-1" (click)="closeDrawer()">
+  </div>
+
+  <!-- Sidebar Drawer -->
+  <div class="w-[220px] bg-custom-primary h-full animate-slideIn" (click)="$event.stopPropagation()">
+  </div>
+</div>

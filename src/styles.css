@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+
+@font-face {
+    font-family: 'Nunito';
+    src: 
+        url('assets/fonts/Nunito-Regular.ttf') format('woff2'), 
+        url('assets/fonts/Nunito-SemiBold.ttf') format('woff2'), 
+        url('assets/fonts/Nunito-ExtraLight.ttf') format('woff2'), 
+        url('assets/fonts/Nunito-Light.ttf') format('woff2'), 
+        url('assets/fonts/Nunito-Medium.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+*{font-family: Nunito;}
+
+.sitemapCon::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+/* Track */
+.sitemapCon::-webkit-scrollbar-track {
+    background: #00000000;
+}
+
+/* Handle */
+.sitemapCon::-webkit-scrollbar-thumb {
+    background: #222;
+}
+
+/* Handle on hover */
+.sitemapCon::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.sitemapCon {
+    overflow: auto;
+    scrollbar-gutter: stable overlay;
+}
+
+
+/* ================================ */
+/* ========== MATSNACKBAR ========= */
+/* ================================ */
+
+mat-snack-bar-container{
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+}
+
+.mat-mdc-snackbar-surface{
+  box-shadow: none !important;
+}
+
+.mat-focus-indicator{
+  background: white !important;
+}
+
+/* ================================ */
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
