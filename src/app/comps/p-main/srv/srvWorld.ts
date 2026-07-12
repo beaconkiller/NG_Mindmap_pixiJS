@@ -8,6 +8,7 @@ import { srvNodeData } from "./srvNodeData";
 import { SrvMain } from "./srvMain";
 import { SrvLines } from "./srvLines";
 import { SrvOverlay } from "./srvOverlay";
+import { SrvWindow } from "./srvWIndow";
 
 @Injectable({
     providedIn: 'root'
@@ -20,6 +21,7 @@ export class SrvWorld {
     srvTexture!: srvTexture;
     srvNodeManager!: SrvNodeManager;
     srvOverlay!: SrvOverlay;
+    srvWindow!: SrvWindow;
     worldBg!: TilingSprite;
     cursorPos: ModelCursorPosition = {
         x: 0,
@@ -41,6 +43,7 @@ export class SrvWorld {
         this.srvLines = new SrvLines(this, this.srvNodeManager);
         this.srvOverlay = new SrvOverlay(this);
         this.srvTexture = new srvTexture();
+        this.srvWindow = new SrvWindow(this, this.srvOverlay);
     }
 
     initWorld() {
@@ -71,6 +74,9 @@ export class SrvWorld {
         this.srvMain.app.stage.addChild(this.world);
         this.srvOverlay.initOverlay();
         this.loadData();
+
+        console.log(this.world.parent);
+        console.log(this.srvOverlay.conOverlay.parent);
     };
 
 
@@ -121,8 +127,8 @@ export class SrvWorld {
         this.world.x += dx;
         this.world.y += dy;
 
-        this.srvOverlay.conOverlay.x -= dx;
-        this.srvOverlay.conOverlay.y -= dy;
+        // this.srvOverlay.conOverlay.x -= dx;
+        // this.srvOverlay.conOverlay.y -= dy;
 
         this.lastMousePos.x = event.global.x;
         this.lastMousePos.y = event.global.y;
@@ -188,11 +194,15 @@ export class SrvWorld {
         this.world.x = mouseX - worldPos.x * this.world.scale.x;
         this.world.y = mouseY - worldPos.y * this.world.scale.y;
 
-        // console.log(this.srvOverlay.gOverlay.scale);
-        // let counterZoom = Math.round((1 - this.zoomScale) * 100) / 100;
-        // console.log(this.zoomScale);
-        // console.log(counterZoom);
-        // this.srvOverlay.gOverlay.scale.set(Math.round(-zoomValue * 100) / 100);
+        // const counterZoom = 1 / this.zoomScale;
+        // this.srvOverlay.gOverlay.scale.set(counterZoom);
+        // console.log(this.world.x);
+        // console.log(worldPos);
+        // console.log(this.srvOverlay.gOverlay.toLocal(event.global))
+        // // console.log(mouseX - worldPos.x * counterZoom - screen.availWidth);
+        // this.srvOverlay.gOverlay.x = -this.world.x / this.zoomScale;
+        // this.srvOverlay.gOverlay.y = 0;
+
     };
 
 

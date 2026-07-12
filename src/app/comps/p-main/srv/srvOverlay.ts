@@ -1,4 +1,4 @@
-import { BitmapText, Container, Graphics } from "pixi.js";
+import { BitmapText, Container, FederatedMouseEvent, Graphics } from "pixi.js";
 import { SrvMain } from "./srvMain";
 import { SrvNodeManager } from "./srvNodeManager";
 import { SrvWorld } from "./srvWorld";
@@ -25,8 +25,10 @@ export class SrvOverlay {
             y: 0,
         });
 
+        // this.conOverlay.eventMode = 'passive';
+
         this.gOverlay = new Graphics();
-        this.gOverlay.rect(-screen.availWidth / 2, -screen.availHeight / 2, screen.availWidth, screen.availHeight);
+        this.gOverlay.rect(0, 0, 0, 0);
         this.gOverlay.fill({
             color: '#000',
             alpha: 0,
@@ -36,7 +38,8 @@ export class SrvOverlay {
         this.buildButtons();
 
         this.conOverlay.addChild(this.gOverlay);
-        this.srvWorld.world.addChildAt(this.conOverlay, 1);
+        this.srvWorld.srvMain.app.stage.addChild(this.conOverlay);
+        // this.srvWorld.world.addChildAt(this.conOverlay, 1);
     }
 
 
@@ -54,8 +57,8 @@ export class SrvOverlay {
             }
         });
 
-        textBmp.x = -textBmp.width - this.screenOffset
-        textBmp.y = (screen.availHeight / 2) - 140 - this.screenOffset
+        textBmp.x = this.srvWorld.srvMain.app.screen.width - textBmp.width - this.screenOffset; // -textBmp.width - this.screenOffset
+        textBmp.y = this.srvWorld.srvMain.app.screen.height - textBmp.height - this.screenOffset - 75; // (this.srvWorld.srvMain.app.screen.height / 2) - 140 - this.screenOffset
 
         let textBmpTest = new BitmapText({
             text: 'Test',
@@ -73,10 +76,12 @@ export class SrvOverlay {
             textBmp.height + padding,
             4,
         );
+
         gButton.fill({
             color: '#222',
             // alpha: 0,
         });
+
         gButton.filters = [
             new DropShadowFilter({
                 blur: 2,
@@ -86,19 +91,21 @@ export class SrvOverlay {
             })
         ]
 
-
-
+        conButton.eventMode = 'static';
+        conButton.cursor = 'pointer';
+        conButton.on('pointerup', this.onPointerUp.bind(this));
 
         conButton.addChild(gButton);
         conButton.addChild(textBmp);
         conButton.addChild(textBmpTest);
-
-        conButton.x = screen.availWidth / 2;
-
-
         this.gOverlay.addChild(conButton);
-
     };
+
+
+    onPointerUp(event: FederatedMouseEvent) {
+        this.srvWorld.srvWindow.spawnAddNewNode();
+        // alert(event);
+    }
 
 
 
