@@ -16,7 +16,8 @@ export class SrvLines {
     srvNodeManager!: SrvNodeManager;
     arrLinesData: Array<ModelLineData> = [];
     arrLinesGraphic: Array<Graphics> = [];
-    childDragOffset:number = 29;
+    childDragOffset: number = 29;
+    lineToCursor: Graphics | null = null;
 
     constructor(
         srvWorld: SrvWorld,
@@ -95,11 +96,17 @@ export class SrvLines {
         if (!child) return;
         let lineChild: Graphics | null = this.getLineGraphicByNodeId((child as any).nodeData.id);
 
+        // ================================================
+        // ===== THIS IS THE V1, BEFORE THE ANIMATION =====
+        // ================================================
+
         // lineChild!.moveTo(lineConnection.startNodeId!.x, lineConnection.startNodeId!.y);
         // lineChild!.lineTo(child!.x, child!.y);
         // lineChild!.stroke({
         //     width: 2, color: '#ddd'
         // });
+
+        // ================================================
 
         this.animateLine(
             lineParent!,
@@ -108,9 +115,6 @@ export class SrvLines {
             lineConnection.endNodeId!.x,
             lineConnection.endNodeId!.y + this.childDragOffset
         );
-
-
-
     }
 
 
@@ -193,6 +197,31 @@ export class SrvLines {
             };
         };
         return null;
+    };
+
+
+
+    drawLineToCursor() {
+
+        let actNode = this.srvNodeManager.childDraggedNode;
+
+        if (actNode == null) return;
+
+        let actCon = this.srvNodeManager.getConFromNodeId(actNode.id);
+
+        let cursorPos = this.srvWorld.cursorPos;
+        if (this.lineToCursor == null) {
+            this.lineToCursor = new Graphics();
+            this.srvWorld.world.addChildAt(this.lineToCursor, 1);
+        }
+
+        this.lineToCursor.clear();
+
+        this.lineToCursor.moveTo(actCon?.x!, actCon?.y! + this.childDragOffset).lineTo(cursorPos.x, cursorPos.y).stroke({
+            width: 2,
+            color: "#ddd"
+        });
+
     }
 
 

@@ -90,6 +90,13 @@ export class SrvWorld {
 
     private onPointerUp() {
         this.isPan = false;
+
+        if (this.srvNodeManager.childDraggedNode != null) {
+            console.log("========= SPAWN NODE MAKER ==========");
+            this.srvNodeManager.createNewNode();
+        }
+
+        this.clearAllDragged();
         // this.srvNodeManager.clearDragged();
         this.world.once('pointerup', this.onPanWorldEnd, this);
         this.world.once('pointerup', this.onDragNodeEnd, this);
@@ -98,7 +105,15 @@ export class SrvWorld {
 
 
     private onPointerDown(event: FederatedPointerEvent) {
-        if (this.srvNodeManager.draggedNode != null) {
+
+        if (this.srvNodeManager.childDraggedNode != null) {
+            this.world.on('pointermove', this.srvLines.drawLineToCursor, this.srvLines);
+            return;
+        }
+
+        if (
+            this.srvNodeManager.draggedNode != null
+        ) {
             this.isDragging = true;
             this.world.on('pointermove', this.onDragNodeStart, this);
             this.world.once('pointerup', this.onDragNodeEnd, this);
@@ -163,9 +178,7 @@ export class SrvWorld {
     private onPanWorldEnd(event: FederatedPointerEvent) {
         this.isPan = false;
         this.isDragging = false;
-        // console.log(this.srvNodeManager);
         if (this.world) {
-            // this.srvNodeManager.clearDragged();
             this.world.off('pointermove', this.onPanMove);
             this.world.off('pointermove', this.onDragNodeStart);
         }
@@ -223,6 +236,13 @@ export class SrvWorld {
             this.world.addChild(nodeContainer);
         })
         this.srvLines.drawLinesAll(this.world);
+    }
+
+
+
+    clearAllDragged() {
+        this.srvNodeManager.draggedNode = null;
+        this.srvNodeManager.childDraggedNode = null;
     }
 
 

@@ -12,13 +12,16 @@ import { SrvLines } from "./srvLines";
 export class SrvNodeManager {
 
     defaultPadding: number = 40;
+
     arrNodes: Array<ModelNode> = [];
     arrConNodes: Array<Container> = [];
+
     activeNode: ModelNode | null = null;
     hoveredNode: ModelNode | null = null;
     draggedNode: ModelNode | null = null;
     childHoveredNode: ModelNode | null = null;
     childDraggedNode: ModelNode | null = null;
+
     srvMain!: SrvMain;
     srvLines!: SrvLines;
 
@@ -79,6 +82,7 @@ export class SrvNodeManager {
         nodeGroup.addChild(this.drawChildDrag(rect));
 
         nodeGroup.filters = [shadowFilter];
+        (nodeGroup as any).nodeId = nodeData.id;
 
         // =====================================================================
         // ========= FINALLY PUSH THE NODE TO arrNodes AND arrConNodes =========
@@ -192,6 +196,30 @@ export class SrvNodeManager {
         rect.cursor = 'pointer';
         return rect;
     };
+
+
+
+    createNewNode() {
+        let nodeData: ModelNode = {
+            container: null,
+            data: [
+                '1. Manhear',
+                '2. Ngoding',
+            ],
+            h: 200,
+            w: 200,
+            x: 200,
+            y: 200,
+            id: "120398",
+            parentId: "",
+            state: null,
+            status: "NOT DONE",
+            tint: "#f8f8f8",
+            title: "Test New",
+        };
+
+        this.srvMain.srvWorld.world.addChild(this.drawNode(nodeData));
+    }
 
 
 
@@ -337,11 +365,20 @@ export class SrvNodeManager {
 
 
     onPointerUpChild(event: FederatedMouseEvent) {
+        console.log("onPointerUpChild");
         let nodeStateData = this.getNodeState(event);
         const conNodeData = (event.currentTarget as any).nodeData as ModelNode;
         this.childHoveredNode = null;
         this.childDraggedNode = null;
     };
+
+
+
+    getConFromNodeId(nodeId: string) {
+        let con: Container | undefined = this.arrConNodes.find((c) => (c as any).nodeId == nodeId);
+        if (!con) return null;
+        return con;
+    }
 
 
 
