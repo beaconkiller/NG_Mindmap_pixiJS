@@ -16,6 +16,7 @@ export class SrvLines {
     srvNodeManager!: SrvNodeManager;
     arrLinesData: Array<ModelLineData> = [];
     arrLinesGraphic: Array<Graphics> = [];
+    childDragOffset:number = 29;
 
     constructor(
         srvWorld: SrvWorld,
@@ -43,8 +44,8 @@ export class SrvLines {
         if (!parentCon) return;
         const g = new Graphics();
 
-        g.moveTo(con.x, con.y);
-        g.lineTo(parentCon.x, parentCon.y);
+        g.moveTo(con.x, con.y + this.childDragOffset);
+        g.lineTo(parentCon.x, parentCon.y + this.childDragOffset);
         g.stroke({
             width: 2, color: '#ddd'
         });
@@ -66,8 +67,7 @@ export class SrvLines {
 
         let child = this.srvNodeManager.findConChildByNodeId((lineConnection.startNodeId as any).nodeData.id);
 
-        console.log(lineConnection);
-
+        // console.log(lineConnection);
 
         let lineParent: Graphics | null = this.getLineGraphicByNodeId((lineConnection.startNodeId as any).nodeData.id);
 
@@ -86,27 +86,27 @@ export class SrvLines {
         this.animateLine(
             lineParent!,
             lineConnection.startNodeId!.x,
-            lineConnection.startNodeId!.y,
+            lineConnection.startNodeId!.y + this.childDragOffset,
             lineConnection.endNodeId!.x,
-            lineConnection.endNodeId!.y
+            lineConnection.endNodeId!.y + this.childDragOffset
         );
 
 
         if (!child) return;
         let lineChild: Graphics | null = this.getLineGraphicByNodeId((child as any).nodeData.id);
 
-        lineChild!.moveTo(lineConnection.startNodeId!.x, lineConnection.startNodeId!.y);
-        lineChild!.lineTo(child!.x, child!.y);
-        lineChild!.stroke({
-            width: 2, color: '#ddd'
-        });
+        // lineChild!.moveTo(lineConnection.startNodeId!.x, lineConnection.startNodeId!.y);
+        // lineChild!.lineTo(child!.x, child!.y);
+        // lineChild!.stroke({
+        //     width: 2, color: '#ddd'
+        // });
 
         this.animateLine(
             lineParent!,
             lineConnection.startNodeId!.x,
-            lineConnection.startNodeId!.y,
+            lineConnection.startNodeId!.y + this.childDragOffset,
             lineConnection.endNodeId!.x,
-            lineConnection.endNodeId!.y
+            lineConnection.endNodeId!.y + this.childDragOffset
         );
 
 
@@ -141,7 +141,7 @@ export class SrvLines {
 
     nodeIsDragged(nodeId: string) {
         let connectedCon = this.srvNodeManager.findConnectedConByNodeId(nodeId);
-        console.log(connectedCon);
+        // console.log(connectedCon);
         for (let child of connectedCon) {
             let lineG = this.getLineGraphicByNodeId((child as any).nodeData.id);
             if (!lineG) continue;
@@ -168,9 +168,9 @@ export class SrvLines {
     clearLine(lineG: Graphics) {
         let x = this.getGraphicByLineId((lineG as any).lineId);
 
-        console.log('x');
-        console.log('x');
-        console.log(x);
+        // console.log('x');
+        // console.log('x');
+        // console.log(x);
 
         lineG.clear();
     };

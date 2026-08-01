@@ -17,6 +17,8 @@ export class SrvNodeManager {
     activeNode: ModelNode | null = null;
     hoveredNode: ModelNode | null = null;
     draggedNode: ModelNode | null = null;
+    childHoveredNode: ModelNode | null = null;
+    childDraggedNode: ModelNode | null = null;
     srvMain!: SrvMain;
     srvLines!: SrvLines;
 
@@ -92,13 +94,47 @@ export class SrvNodeManager {
 
 
     drawChildDrag(rect: Graphics) {
+
+        let con = new Container();
+
         let x = rect.x;
         let y = rect.y;
 
         let gDrag = new Graphics();
-        gDrag.circle(x, y + 30, 10).fill({ color: "#555" });
+        gDrag.circle(x, y + 30, 8).fill({ color: "#55555540" });
+        // gDrag.roundRect(
+        //     x - 10,
+        //     y + 20,
+        //     20,
+        //     20,
+        //     4
+        // ).fill({ color: "#fafafa" });
 
-        return gDrag;
+        // gDrag.stroke({
+        //     color: "#cacaca",
+        //     width: 1,
+        //     join: "round",
+        // });
+
+        gDrag.filters = [
+            new DropShadowFilter({
+                blur: 2,
+                color: 0x000000,
+                alpha: 0.1,
+                offset: { x: 0, y: 0 },
+            }),
+        ];
+
+        con.eventMode = "static";
+        con.on('mouseenter', this.onMouseEnterChild.bind(this));
+        con.on('pointerdown', this.onPointerDownChild.bind(this));
+        con.on('pointerup', this.onPointerUpChild.bind(this));
+
+        // nodeGroup.on('mouseenter', this.onMouseEnter.bind(this));
+
+
+        con.addChild(gDrag);
+        return con;
     }
 
 
@@ -181,6 +217,18 @@ export class SrvNodeManager {
 
 
 
+    onMouseEnterChild(event: FederatedMouseEvent): void {
+        const conData = this.getNodeDataFromEvent(event);
+        let container = this.getConFromEvent(event);
+
+
+        console.log("mouseEneter Child");
+
+        this.hoveredNode = conData;
+    };
+
+
+
     onMouseLeave(event: FederatedMouseEvent): void {
         this.hoveredNode = null;
 
@@ -191,6 +239,12 @@ export class SrvNodeManager {
             duration: 0.4,
             ease: 'bounce',
         });
+    };
+
+
+
+    onMouseLeaveChild(event: FederatedMouseEvent): void {
+        this.childHoveredNode = null;
     };
 
 
@@ -209,13 +263,25 @@ export class SrvNodeManager {
 
 
     onPointerDown(event: FederatedMouseEvent) {
+        if (this.childDraggedNode != null) return;
+
+        let container = (event.currentTarget as Container);
         const conData = this.getNodeDataFromEvent(event);
         this.activeNode = conData;
         this.draggedNode = conData;
 
-
-
         this.srvMain.srvWorld.srvLines.nodeIsDragged(conData.id);
+    };
+
+
+
+    onPointerDownChild(event: FederatedMouseEvent) {
+        const conData = this.getNodeDataFromCon(this.getNodeDataFromDragChildEvent(event));
+        console.log("conData");
+        console.log(conData);
+        this.childDraggedNode = conData;
+        console.log("draggedChild");
+        console.log(this.childDraggedNode);
     };
 
 
@@ -264,8 +330,17 @@ export class SrvNodeManager {
         nodeStateData.isDrag = false;
 
         // this.draggedNode = null;
-        console.log(conData);
+        // console.log(conData);
         this.srvMain.srvWorld.srvLines.nodeDoneDragged(conNodeData.id);
+    };
+
+
+
+    onPointerUpChild(event: FederatedMouseEvent) {
+        let nodeStateData = this.getNodeState(event);
+        const conNodeData = (event.currentTarget as any).nodeData as ModelNode;
+        this.childHoveredNode = null;
+        this.childDraggedNode = null;
     };
 
 
@@ -335,6 +410,13 @@ export class SrvNodeManager {
         };
 
         return arr
+    }
+
+
+
+    getNodeDataFromDragChildEvent(event: FederatedMouseEvent): Container {
+        let conChild = (event.currentTarget as Container)!.parent;
+        return conChild!;
     }
 
 
