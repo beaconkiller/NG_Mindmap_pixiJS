@@ -71,13 +71,36 @@ export class SrvNodeManager {
 
         nodeGroup.addChild(rect);
         nodeGroup.addChild(titleText);
+
+        // selotip 
+        // solve this redraw bug later
+        nodeGroup.addChild(this.drawChildDrag(rect));
+
         nodeGroup.filters = [shadowFilter];
+
+        // =====================================================================
+        // ========= FINALLY PUSH THE NODE TO arrNodes AND arrConNodes =========
+        // =====================================================================
 
         this.arrNodes.push(nodeData);
         this.arrConNodes.push(nodeGroup);
 
         return nodeGroup;
     };
+
+
+
+
+    drawChildDrag(rect: Graphics) {
+        let x = rect.x;
+        let y = rect.y;
+
+        let gDrag = new Graphics();
+        gDrag.circle(x, y + 30, 10).fill({ color: "#555" });
+
+        return gDrag;
+    }
+
 
 
 
@@ -147,8 +170,8 @@ export class SrvNodeManager {
         let container = this.getConFromEvent(event);
 
         gsap.to(container.scale, {
-            x: 1.08,
-            y: 1.08,
+            x: 1.04,
+            y: 1.04,
             duration: 0.2,
             ease: 'power2.out',
         });
@@ -212,9 +235,6 @@ export class SrvNodeManager {
         //         container.y = this.srvMain.cursorPos.y;
         //     };
         // };
-
-
-
     };
 
 

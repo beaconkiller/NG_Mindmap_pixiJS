@@ -40,7 +40,7 @@ export class SrvMain {
 
         await this.app.init({
             canvas: canvas,
-            resizeTo: window,
+            resizeTo: canvas,
             background: '#fafafa',
             antialias: true,
             resolution: window.devicePixelRatio || 1,
@@ -49,7 +49,6 @@ export class SrvMain {
         });
 
         this.app.stage.eventMode = 'static';
-
 
         this.srvWorld.initWorld();
         this.world = this.srvWorld.getWorld();

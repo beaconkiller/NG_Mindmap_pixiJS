@@ -7,11 +7,12 @@ import {
 
 import { Application, Graphics } from 'pixi.js';
 import { SrvMain } from './srv/srvMain';
+import { CSidebarComponent } from "./c-sidebar/c-sidebar.component";
 
 
 @Component({
   selector: 'app-p-main',
-  imports: [],
+  imports: [CSidebarComponent],
   templateUrl: './p-main.component.html',
   styleUrl: './p-main.component.css'
 })
@@ -27,6 +28,7 @@ export class PMainComponent {
 
 
   async ngAfterViewInit() {
+    console.log(this.canvas.nativeElement);
     await this.SrvMain.initialize(this.canvas.nativeElement);
   };
 

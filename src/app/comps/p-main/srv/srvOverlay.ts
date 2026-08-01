@@ -9,7 +9,7 @@ export class SrvOverlay {
     srvNodeManager!: SrvNodeManager;
     conOverlay!: Container;
     gOverlay!: Graphics;
-    screenOffset: number = 40;
+    screenPadOffset: number = 30;
     constructor(
         srvWorld: SrvWorld,
     ) {
@@ -57,8 +57,8 @@ export class SrvOverlay {
             }
         });
 
-        textBmp.x = this.srvWorld.srvMain.app.screen.width - textBmp.width - this.screenOffset; // -textBmp.width - this.screenOffset
-        textBmp.y = this.srvWorld.srvMain.app.screen.height - textBmp.height - this.screenOffset - 75; // (this.srvWorld.srvMain.app.screen.height / 2) - 140 - this.screenOffset
+        textBmp.x = this.srvWorld.srvMain.app.screen.width - textBmp.width - this.screenPadOffset; // -textBmp.width - this.screenPadOffset
+        textBmp.y = this.srvWorld.srvMain.app.screen.height - textBmp.height - this.screenPadOffset - 75; // (this.srvWorld.srvMain.app.screen.height / 2) - 140 - this.screenPadOffset
 
         let textBmpTest = new BitmapText({
             text: 'Test',

@@ -4,15 +4,12 @@
 
   <div class="grow flex flex-col overflow-auto">
     <router-outlet></router-outlet>
-    <!-- Header -->
     <div class="bg-white shadow p-2 flex items-center">
-      <!-- Tombol untuk MOBILE -->
       <button class="md:hidden bg-white text-black px-3 py-1 rounded hover:bg-custom-primary-hover transition"
         (click)="toggleDrawer()">
         ☰
       </button>
 
-      <!-- Tombol untuk DESKTOP -->
       <button class="hidden md:block bg-white text-black px-3 py-1 rounded hover:bg-custom-primary-hover transition"
         (click)="toggleSidebar()">
         {{ isCollapsed ? '☰' : '×' }}

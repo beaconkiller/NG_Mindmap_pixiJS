@@ -5,6 +5,7 @@ import { SrvNodeManager } from "./srvNodeManager";
 import { srvNodeData } from "./srvNodeData";
 import { ModelLineData, ModelLinesConnection, ModelNode } from "../model/ModelPoint";
 import { SrvHelper } from "./srvHelper";
+import gsap from "gsap";
 
 @Injectable({
     providedIn: 'root'
@@ -70,11 +71,26 @@ export class SrvLines {
 
         let lineParent: Graphics | null = this.getLineGraphicByNodeId((lineConnection.startNodeId as any).nodeData.id);
 
-        lineParent!.moveTo(lineConnection.startNodeId!.x, lineConnection.startNodeId!.y);
-        lineParent!.lineTo(lineConnection.endNodeId!.x, lineConnection.endNodeId!.y);
-        lineParent!.stroke({
-            width: 2, color: '#ddd'
-        });
+        // ================================================
+        // ===== THIS IS THE V1, BEFORE THE ANIMATION =====
+        // ================================================
+
+        // lineParent!.moveTo(lineConnection.startNodeId!.x, lineConnection.startNodeId!.y);
+        // lineParent!.lineTo(lineConnection.endNodeId!.x, lineConnection.endNodeId!.y);
+        // lineParent!.stroke({
+        //     width: 2, color: '#ddd'
+        // });
+
+        // ================================================
+
+        this.animateLine(
+            lineParent!,
+            lineConnection.startNodeId!.x,
+            lineConnection.startNodeId!.y,
+            lineConnection.endNodeId!.x,
+            lineConnection.endNodeId!.y
+        );
+
 
         if (!child) return;
         let lineChild: Graphics | null = this.getLineGraphicByNodeId((child as any).nodeData.id);
@@ -84,6 +100,16 @@ export class SrvLines {
         lineChild!.stroke({
             width: 2, color: '#ddd'
         });
+
+        this.animateLine(
+            lineParent!,
+            lineConnection.startNodeId!.x,
+            lineConnection.startNodeId!.y,
+            lineConnection.endNodeId!.x,
+            lineConnection.endNodeId!.y
+        );
+
+
 
     }
 
@@ -141,6 +167,10 @@ export class SrvLines {
 
     clearLine(lineG: Graphics) {
         let x = this.getGraphicByLineId((lineG as any).lineId);
+
+        console.log('x');
+        console.log('x');
+        console.log(x);
 
         lineG.clear();
     };
@@ -217,8 +247,40 @@ export class SrvLines {
         let lineData = this.getLineGByLineId(lineId);
 
         console.log(lineData);
+    }
 
 
+
+    private animateLine(
+        graphics: Graphics,
+        startX: number,
+        startY: number,
+        endX: number,
+        endY: number,
+        duration = 0.2
+    ) {
+        const progress = { t: 0 };
+
+        gsap.to(progress, {
+            t: 1,
+            duration,
+            ease: "power1.inOut",
+            onUpdate: () => {
+
+                const x = startX + (endX - startX) * progress.t;
+                const y = startY + (endY - startY) * progress.t;
+
+                graphics.clear();
+
+                graphics
+                    .moveTo(startX, startY)
+                    .lineTo(x, y)
+                    .stroke({
+                        width: 2,
+                        color: "#ddd",
+                    });
+            }
+        });
     }
 
 
