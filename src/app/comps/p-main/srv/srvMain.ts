@@ -6,6 +6,7 @@ import { srvTexture } from "./srvTexture";
 import { ModelCursorPosition } from "../model/ModelWorld";
 import { SrvWorld } from "./srvWorld";
 import { SrvHelper } from "./srvHelper";
+import { repo_dp } from "../../c-overlay-parent/repo.dynamicPopUp";
 
 @Injectable({
     providedIn: 'root'
@@ -20,18 +21,22 @@ export class SrvMain {
     zoomScale: number = 1;
     SrvNodeManager!: SrvNodeManager;
     srvTexture: srvTexture = new srvTexture();
-    srvWorld: SrvWorld = new SrvWorld(this);
+    srvWorld!: SrvWorld;
     worldBg!: TilingSprite;
     cursorPos: ModelCursorPosition = {
         x: 0,
         y: 0
     };
+    repoDp!: repo_dp;
     private lastMousePos = { x: 0, y: 0 };
 
     constructor(
+        repoDp: repo_dp,
     ) {
         this.app = new Application();
-        this.SrvNodeManager = new SrvNodeManager(this);
+        this.repoDp = repoDp;
+        this.srvWorld = new SrvWorld(this);
+        this.SrvNodeManager = new SrvNodeManager(this, this.repoDp);
     };
 
 

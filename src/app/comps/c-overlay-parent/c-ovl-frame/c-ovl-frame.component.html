@@ -1,0 +1,10 @@
+<div class="ovl-frame flex -translate-x-1/2 -translate-y-1/2 p-2 flex-col fixed w-fit h-fit z-10 bg-white rounded-sm shadow-[0px_0px_12px_#00000050]">
+    <div class="ovl-header w-full flex justify-end p-1 rounded-md absolute top-0 left-0">
+        <button (click)="close()" class="w-fit h-fit text-xs flex flex-row space-x-1 bg-red-700 text-white rounded-sm items-center px-2 p-1 cursor-pointer hover:opacity-60 transition-all">
+            <!-- <p class="">Tutup</p> -->
+            <ng-icon name="bootstrapXCircleFill"></ng-icon>
+        </button>
+    </div>
+
+    <ng-template #contentHost></ng-template>
+</div>

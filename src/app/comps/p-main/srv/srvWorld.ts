@@ -39,7 +39,7 @@ export class SrvWorld {
         srvMain: SrvMain,
     ) {
         this.srvMain = srvMain;
-        this.srvNodeManager = new SrvNodeManager(this.srvMain);
+        this.srvNodeManager = new SrvNodeManager(this.srvMain, this.srvMain.repoDp);
         this.srvLines = new SrvLines(this, this.srvNodeManager);
         this.srvOverlay = new SrvOverlay(this);
         this.srvTexture = new srvTexture();
@@ -91,10 +91,10 @@ export class SrvWorld {
     private onPointerUp() {
         this.isPan = false;
 
-        if (this.srvNodeManager.childDraggedNode != null) {
-            console.log("========= SPAWN NODE MAKER ==========");
-            this.srvNodeManager.createNewNode();
-        }
+        // if (this.srvNodeManager.childDraggedNode != null) {
+        //     console.log("========= SPAWN NODE MAKER ==========");
+        //     this.srvNodeManager.createNewNode();
+        // }
 
         this.clearAllDragged();
         // this.srvNodeManager.clearDragged();
@@ -108,6 +108,7 @@ export class SrvWorld {
 
         if (this.srvNodeManager.childDraggedNode != null) {
             this.world.on('pointermove', this.srvLines.drawLineToCursor, this.srvLines);
+            this.world.once('pointerup', this.srvNodeManager.spawnNodeMaker, this.srvNodeManager);
             return;
         }
 
@@ -242,7 +243,7 @@ export class SrvWorld {
 
     clearAllDragged() {
         this.srvNodeManager.draggedNode = null;
-        this.srvNodeManager.childDraggedNode = null;
+        // this.srvNodeManager.childDraggedNode =  null;
     }
 
 

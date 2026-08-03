@@ -5,6 +5,8 @@ import { DropShadowFilter } from 'pixi-filters';
 import { SrvMain } from "./srvMain";
 import { gsap } from 'gsap';
 import { SrvLines } from "./srvLines";
+import { repo_dp } from "../../c-overlay-parent/repo.dynamicPopUp";
+import { CNodeMakerComponent } from "../../c-node-maker/c-node-maker.component";
 
 @Injectable({
     providedIn: 'root'
@@ -26,9 +28,11 @@ export class SrvNodeManager {
     srvLines!: SrvLines;
 
     constructor(
-        srvMain: SrvMain
+        srvMain: SrvMain,
+        private repoDp: repo_dp,
     ) {
         this.srvMain = srvMain;
+        console.log(this.srvMain.srvWorld);
     };
 
     drawNode(nodeData: ModelNode): Container {
@@ -199,26 +203,34 @@ export class SrvNodeManager {
 
 
 
-    createNewNode() {
+    createNewNode(
+        parentNodeId: string | null,
+        cursorPos: {
+            x: number,
+            y: number,
+        },
+        strTitle: string,
+    ): ModelNode {
         let nodeData: ModelNode = {
             container: null,
             data: [
                 '1. Manhear',
                 '2. Ngoding',
             ],
-            h: 200,
-            w: 200,
-            x: 200,
-            y: 200,
+            h: 0,
+            w: 0,
+            x: cursorPos.x,
+            y: cursorPos.y,
             id: "120398",
-            parentId: "",
+            parentId: parentNodeId?.trim() != "" ? parentNodeId : "",
             state: null,
             status: "NOT DONE",
             tint: "#f8f8f8",
-            title: "Test New",
+            title: strTitle,
         };
 
         this.srvMain.srvWorld.world.addChild(this.drawNode(nodeData));
+        return nodeData;
     }
 
 
@@ -242,6 +254,46 @@ export class SrvNodeManager {
 
         this.hoveredNode = conData;
     };
+
+
+
+    async spawnNodeMaker(event: FederatedMouseEvent) {
+        let tmpChildDraggedNode = JSON.parse(JSON.stringify(this.childDraggedNode));
+        let cursorPosFreeze = JSON.parse(JSON.stringify(this.srvMain.srvWorld.cursorPos));
+        this.childDraggedNode = null;
+
+        this.srvMain.srvWorld.srvLines.lineToCursor?.clear();
+        this.srvMain.srvWorld.srvLines.lineToCursor = null;
+
+        console.log(tmpChildDraggedNode);
+
+        let res = await new Promise((resolve) => {
+            this.repoDp.spawnCompFunc(CNodeMakerComponent).subscribe((val) => {
+                resolve(val);
+            })
+        })
+
+        console.log(res);
+        let newNode = this.createNewNode(tmpChildDraggedNode.id, cursorPosFreeze, "testing asd");
+
+        this.arrConNodes.push(this.findConByNodeId(newNode.id)!);
+        this.arrNodes.push(newNode);
+
+        let conParent: Container = this.findConByNodeId(newNode.parentId)!;
+        let conChild: Container = this.findConByNodeId(newNode.id)!;
+
+        console.log(conParent);
+        console.log(conChild);
+        
+        this.srvMain.srvWorld.srvLines.drawLinesAll(this.srvMain.srvWorld.world);
+        console.log(this.srvMain.srvWorld.world);
+
+        // SELOTIP BUG AS FUCK
+
+        // this.srvMain.srvWorld.srvLines.drawLinesToParent(conParent!, conChild!, this.srvMain.srvWorld.world);
+
+        // console.log(this.srvMain.srvWorld);
+    }
 
 
 
@@ -400,7 +452,8 @@ export class SrvNodeManager {
 
 
 
-    findConByNodeId(idToSearch: string): Container | null {
+    findConByNodeId(idToSearch: string | null): Container | null {
+        if (idToSearch == null) return null;
         let conResult!: Container;
         this.arrConNodes.forEach(el => {
             let nodeId = ((el as any).nodeData as ModelNode).id;
