@@ -13,7 +13,7 @@ export class srvTexture {
 
         let tileSize = 64;
         g.rect(0, 0, tileSize, tileSize);
-        g.fill({ color: '#f9f9f9', alpha: 1 });
+        g.fill({ color: '#eee', alpha: 1 });
 
         g.circle(tileSize / 2, tileSize / 2, 2);
         g.fill('#12312320')

@@ -78,12 +78,13 @@ export class SrvNodeManager {
             offset: { x: 0, y: 0 },
         });
 
+        nodeGroup.addChild(this.drawChildPoint(rect));
+        nodeGroup.addChild(this.drawParentPoint(rect));
         nodeGroup.addChild(rect);
         nodeGroup.addChild(titleText);
 
         // selotip 
         // solve this redraw bug later
-        nodeGroup.addChild(this.drawChildDrag(rect));
 
         nodeGroup.filters = [shadowFilter];
         (nodeGroup as any).nodeId = nodeData.id;
@@ -101,7 +102,51 @@ export class SrvNodeManager {
 
 
 
-    drawChildDrag(rect: Graphics) {
+    drawChildPoint(rect: Graphics) {
+        let con = new Container();
+
+        let x = rect.x;
+        let y = rect.y;
+
+        let gDrag = new Graphics();
+        // gDrag.circle(x, y + 30, 8).fill({ color: "#55555540" });
+
+        gDrag.roundRect(
+            x - 15,
+            y + 20,
+            30,
+            16,
+            4
+        ).fill({ color: "#fafafa" });
+
+        // gDrag.stroke({
+        //     color: "#cacaca",
+        //     width: .4,
+        //     join: "round",
+        // });
+
+        gDrag.filters = [
+            new DropShadowFilter({
+                blur: 2,
+                color: 0x000000,
+                alpha: 0.1,
+                offset: { x: 0, y: 0 },
+            }),
+        ];
+
+        con.eventMode = "static";
+        con.on('mouseenter', this.onMouseEnterChild.bind(this));
+        con.on('pointerdown', this.onPointerDownChild.bind(this));
+        con.on('pointerup', this.onPointerUpChild.bind(this));
+
+        con.addChild(gDrag);
+        return con;
+    }
+
+
+
+
+    drawParentPoint(rect: Graphics) {
 
         let con = new Container();
 
@@ -109,14 +154,15 @@ export class SrvNodeManager {
         let y = rect.y;
 
         let gDrag = new Graphics();
-        gDrag.circle(x, y + 30, 8).fill({ color: "#55555540" });
-        // gDrag.roundRect(
-        //     x - 10,
-        //     y + 20,
-        //     20,
-        //     20,
-        //     4
-        // ).fill({ color: "#fafafa" });
+        // gDrag.circle(x, y - 30, 8).fill({ color: "#55555540" });
+
+        gDrag.roundRect(
+            x - 15,
+            y - 40,
+            30,
+            16,
+            4
+        ).fill({ color: "#fafafa" });
 
         // gDrag.stroke({
         //     color: "#cacaca",
@@ -137,9 +183,6 @@ export class SrvNodeManager {
         con.on('mouseenter', this.onMouseEnterChild.bind(this));
         con.on('pointerdown', this.onPointerDownChild.bind(this));
         con.on('pointerup', this.onPointerUpChild.bind(this));
-
-        // nodeGroup.on('mouseenter', this.onMouseEnter.bind(this));
-
 
         con.addChild(gDrag);
         return con;
@@ -163,9 +206,9 @@ export class SrvNodeManager {
         rect.roundRect(-rectW / 2, -rectH / 2, rectW, rectH, 8);
 
         let status = nodeData.status;
-        rect.fill(status == "DONE" ? '#f8f8f8' : '#FFDBDB');
+        rect.fill(status == "DONE" ? '#f8f8f8' : '#f6f6f6');
         rect.stroke({
-            color: status == 'DONE' ? '#fafafa' : '#FFEDED',
+            color: status == 'DONE' ? '#fafafa' : '#fff',
             width: 2,
             join: "round",
         });
@@ -184,14 +227,15 @@ export class SrvNodeManager {
 
 
     redrawBorderedRect(rect: Graphics, title: BitmapText, nodeData: ModelNode): Graphics {
+
         const rectW = title.width + this.defaultPadding;
         const rectH = title.height + this.defaultPadding;
         rect.roundRect(-rectW / 2, -rectH / 2, rectW, rectH, 8);
 
         let status = nodeData.status;
-        rect.fill(status == "DONE" ? '#f8f8f8' : '#FFDBDB');
+        rect.fill(status == "DONE" ? '#f8f8f8' : '#f6f6f6');
         rect.stroke({
-            color: status == 'DONE' ? '#fafafa' : '#FFEDED',
+            color: status == 'DONE' ? '#fafafa' : '#fff',
             width: 2,
             join: "round",
         });
@@ -221,7 +265,7 @@ export class SrvNodeManager {
             w: 0,
             x: cursorPos.x,
             y: cursorPos.y,
-            id: "120398",
+            id: this.generateId(),
             parentId: parentNodeId?.trim() != "" ? parentNodeId : "",
             state: null,
             status: "NOT DONE",
@@ -236,7 +280,7 @@ export class SrvNodeManager {
 
 
     getTitleBmp(container: Container): BitmapText {
-        return container.children[1] as BitmapText;
+        return container.children.at(-1) as BitmapText;
     };
 
 
@@ -245,12 +289,12 @@ export class SrvNodeManager {
         const conData = this.getNodeDataFromEvent(event);
         let container = this.getConFromEvent(event);
 
-        gsap.to(container.scale, {
-            x: 1.04,
-            y: 1.04,
-            duration: 0.2,
-            ease: 'power2.out',
-        });
+        // gsap.to(container.scale, {
+        //     x: 1.04,
+        //     y: 1.04,
+        //     duration: 0.2,
+        //     ease: 'power2.out',
+        // });
 
         this.hoveredNode = conData;
     };
@@ -265,16 +309,16 @@ export class SrvNodeManager {
         this.srvMain.srvWorld.srvLines.lineToCursor?.clear();
         this.srvMain.srvWorld.srvLines.lineToCursor = null;
 
-        console.log(tmpChildDraggedNode);
-
-        let res = await new Promise((resolve) => {
+        let res: any = await new Promise((resolve) => {
             this.repoDp.spawnCompFunc(CNodeMakerComponent).subscribe((val) => {
                 resolve(val);
             })
-        })
+        });
+
+        if (!res.title) return;
 
         console.log(res);
-        let newNode = this.createNewNode(tmpChildDraggedNode.id, cursorPosFreeze, "testing asd");
+        let newNode = this.createNewNode(tmpChildDraggedNode.id, cursorPosFreeze, res.title);
 
         this.arrConNodes.push(this.findConByNodeId(newNode.id)!);
         this.arrNodes.push(newNode);
@@ -282,17 +326,7 @@ export class SrvNodeManager {
         let conParent: Container = this.findConByNodeId(newNode.parentId)!;
         let conChild: Container = this.findConByNodeId(newNode.id)!;
 
-        console.log(conParent);
-        console.log(conChild);
-        
-        this.srvMain.srvWorld.srvLines.drawLinesAll(this.srvMain.srvWorld.world);
-        console.log(this.srvMain.srvWorld.world);
-
-        // SELOTIP BUG AS FUCK
-
-        // this.srvMain.srvWorld.srvLines.drawLinesToParent(conParent!, conChild!, this.srvMain.srvWorld.world);
-
-        // console.log(this.srvMain.srvWorld);
+        this.srvMain.srvWorld.srvLines.drawLinesToParent(conChild, conParent, this.srvMain.srvWorld.world);
     }
 
 
@@ -403,7 +437,7 @@ export class SrvNodeManager {
         const conNodeData = (event.currentTarget as any).nodeData as ModelNode;
 
         let conData = (event.currentTarget as Container);
-        let graphicData = conData.children[0] as Graphics;
+        let graphicData = conData.children[2] as Graphics;
         graphicData = this.redrawBorderedRect(graphicData, this.getTitleBmp(conData), conNodeData);
 
         nodeStateData.isMouseDown = false;
@@ -513,5 +547,13 @@ export class SrvNodeManager {
 
     clearDragged(): void {
         this.draggedNode = null;
+    };
+
+
+
+    generateId(): string {
+        let dateNow = new Date();
+        return dateNow.getTime().toString();
+        // return '';
     }
 }

@@ -30,6 +30,13 @@ export class SrvLines {
 
 
     drawLinesAll(world: Container): void {
+        // this.clearLinesAll()
+        // this.arrLinesData = [];
+        // this.arrLinesGraphic = [];
+
+        console.log(this.arrLinesGraphic.length);
+        console.log(this.arrLinesData.length);
+
         this.srvNodeManager.arrConNodes.forEach(el => {
             let parentId = this.srvNodeManager.getParentId(el);
             let parentCon = parentId ? this.srvNodeManager.findConByNodeId(parentId) : null;
@@ -37,6 +44,9 @@ export class SrvLines {
                 this.drawLinesToParent(el, parentCon, world);
             }
         });
+
+        console.log(this.arrLinesGraphic.length);
+        console.log(this.arrLinesData.length);
     };
 
 
@@ -45,7 +55,7 @@ export class SrvLines {
         if (!parentCon) return;
         const g = new Graphics();
 
-        g.moveTo(con.x, con.y + this.childDragOffset);
+        g.moveTo(con.x, con.y - this.childDragOffset);
         g.lineTo(parentCon.x, parentCon.y + this.childDragOffset);
         g.stroke({
             width: 2, color: '#ddd'
@@ -68,7 +78,9 @@ export class SrvLines {
 
         let child = this.srvNodeManager.findConChildByNodeId((lineConnection.startNodeId as any).nodeData.id);
 
-        // console.log(lineConnection);
+        console.log("lineConnection");
+        console.log(lineConnection.startNodeId);
+        console.log(lineConnection.endNodeId);
 
         let lineParent: Graphics | null = this.getLineGraphicByNodeId((lineConnection.startNodeId as any).nodeData.id);
 
@@ -86,10 +98,10 @@ export class SrvLines {
 
         this.animateLine(
             lineParent!,
-            lineConnection.startNodeId!.x,
-            lineConnection.startNodeId!.y + this.childDragOffset,
             lineConnection.endNodeId!.x,
-            lineConnection.endNodeId!.y + this.childDragOffset
+            lineConnection.endNodeId!.y + this.childDragOffset,
+            lineConnection.startNodeId!.x,
+            lineConnection.startNodeId!.y - this.childDragOffset,
         );
 
 
@@ -108,13 +120,13 @@ export class SrvLines {
 
         // ================================================
 
-        this.animateLine(
-            lineParent!,
-            lineConnection.startNodeId!.x,
-            lineConnection.startNodeId!.y + this.childDragOffset,
-            lineConnection.endNodeId!.x,
-            lineConnection.endNodeId!.y + this.childDragOffset
-        );
+        // this.animateLine(
+        //     lineParent!,
+        //     lineConnection.startNodeId!.x,
+        //     lineConnection.startNodeId!.y + this.childDragOffset,
+        //     lineConnection.endNodeId!.x,
+        //     lineConnection.endNodeId!.y + this.childDragOffset
+        // );
     }
 
 
@@ -151,6 +163,15 @@ export class SrvLines {
             if (!lineG) continue;
             this.clearLine(lineG);
         }
+    };
+
+
+
+    clearLinesAll() {
+        for (let el of this.arrLinesGraphic) {
+            el.clear();
+        }
+        this.arrLinesGraphic = [];
     }
 
 
